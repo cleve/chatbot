@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.chat.boot.utils.Base64Converter
 import com.chat.boot.utils.RequestUtils
@@ -33,6 +31,7 @@ class ChatActivity : AppCompatActivity() {
         val btnCamera = findViewById<Button>(R.id.button_camera)
         val chatEntry = findViewById<EditText>(R.id.user_input)
         val chatHistory = findViewById<TextView>(R.id.interactions)
+        val chatInteractionContainer = findViewById<LinearLayout>(R.id.interactionContainer)
 
         // Camera selection
         btnCamera.setOnClickListener{
@@ -55,7 +54,7 @@ class ChatActivity : AppCompatActivity() {
 
             // Request to the rasa server
             val requestObject = RequestUtils()
-            requestObject.sendMessage(this, chatEntry.text.toString(), chatHistory,
+            requestObject.sendMessage(this, chatEntry.text.toString(), chatInteractionContainer,
                 this.fileEncoded
             )
 

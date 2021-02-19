@@ -2,14 +2,14 @@ package com.chat.boot.utils
 
 import android.content.Context
 import android.util.Log
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.chat.boot.R
 import org.json.JSONArray
 import org.json.JSONObject
-
-import com.chat.boot.utils.Constants
 
 
 class RequestUtils {
@@ -36,7 +36,27 @@ class RequestUtils {
 
     }
 
-    fun sendMessage(ctx: Context, msg: String, chatHistory: TextView, fileEncoded: String?) {
+    fun buildChatBubble(ctx: Context, msg: String, interactionType: String?): TextView {
+        val textView = TextView(ctx)
+        val customLayout = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+        customLayout.setMargins(20,20,20,20)
+        textView.setPadding(20, 20, 20, 20)
+        textView.layoutParams = customLayout
+        textView.textSize = 14f
+        textView.text = msg
+
+        if (interactionType == "bot") {
+            textView.setBackgroundResource(R.drawable.bot_responses)
+""        } else {
+            textView.setBackgroundResource(R.drawable.bot_responses)
+        }
+
+        return textView
+
+    }
+
+    fun sendMessage(ctx: Context, msg: String, chatHistory: LinearLayout, fileEncoded: String?) {
         val queue = Volley.newRequestQueue(ctx)
         val jsonBody = JSONObject()
         jsonBody.put("sender", "android-app-user-id")
@@ -57,17 +77,15 @@ class RequestUtils {
                 Log.d("HttpClient", "success! response: $response")
                 val jsonArray = JSONArray(response)
                 if (jsonArray.length() == 0) {
-                    chatHistory.text = "Server error :("
+                    chatHistory.addView(buildChatBubble(ctx, "server error", "boot"))
                 } else {
-                    var botResponse = ""
                     // Sadly JSONArray does not expose an iterator, doing it in the old way
                     for (ii in 0 until jsonArray.length()) {
                         val jsonObject = jsonArray.getJSONObject(ii)
                         if (jsonObject.has("text")) {
-                            botResponse += jsonObject["text"]
+                            chatHistory.addView(buildChatBubble(ctx, jsonObject["text"].toString(), "boot"))
                         }
                     }
-                    (botResponse).also { chatHistory.text = it }
                 }},
             Response.ErrorListener { error -> Log.d("HttpClient", "error: $error") }) {
 
