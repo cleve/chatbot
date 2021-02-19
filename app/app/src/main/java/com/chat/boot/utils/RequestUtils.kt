@@ -53,19 +53,22 @@ class RequestUtils {
         val rasaRequest: StringRequest = object : StringRequest(
             Method.POST, serverUrl,
             Response.Listener {
-                response -> Log.d("HttpClient", "success! response: $response")
-
-                Log.d("object response", response)
+                response ->
+                Log.d("HttpClient", "success! response: $response")
                 val jsonArray = JSONArray(response)
-
                 if (jsonArray.length() == 0) {
                     chatHistory.text = "Server error :("
                 } else {
-                    val jsonObject = jsonArray.getJSONObject(0)
-                    // Response
-                    (jsonObject["text"] as String).also { chatHistory.text = it }
-                    Log.d("Text", jsonObject["text"].toString()) }
-                },
+                    var botResponse = ""
+                    // Sadly JSONArray does not expose an iterator, doing it in the old way
+                    for (ii in 0 until jsonArray.length()) {
+                        val jsonObject = jsonArray.getJSONObject(ii)
+                        if (jsonObject.has("text")) {
+                            botResponse += jsonObject["text"]
+                        }
+                    }
+                    (botResponse).also { chatHistory.text = it }
+                }},
             Response.ErrorListener { error -> Log.d("HttpClient", "error: $error") }) {
 
             override fun getBody(): ByteArray? {
