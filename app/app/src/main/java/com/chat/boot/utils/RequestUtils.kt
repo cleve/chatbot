@@ -4,6 +4,8 @@ import android.content.res.Resources
 import android.content.Context
 import android.util.Log
 import android.view.Gravity
+import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Response
@@ -62,6 +64,39 @@ class RequestUtils {
 
     }
 
+    fun sendPayloadMessage(ctx: Context, msg: String, chatHistory: LinearLayout) {
+        Log.i("sending payload", msg)
+        val queue = Volley.newRequestQueue(ctx)
+        val jsonBody = JSONObject()
+        jsonBody.put("sender", "android-app-user-id")
+        jsonBody.put("message", msg)
+        val rasaRequest: StringRequest = object : StringRequest(
+                Method.POST, serverUrl,
+                Response.Listener {
+                    response ->
+                    Log.d("HttpClient", "success! response: $response")
+                    val jsonArray = JSONArray(response)
+                    if (jsonArray.length() == 0) {
+                        chatHistory.addView(buildChatBubble(ctx, "server error", "bot"))
+                    } else {
+                        // Sadly JSONArray does not expose an iterator, doing it in the old way
+                        for (ii in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(ii)
+                            if (jsonObject.has("text")) {
+                                chatHistory.addView(buildChatBubble(ctx, jsonObject["text"].toString(), "bot"))
+                            }
+                        }
+
+                    }},
+                    Response.ErrorListener { error -> Log.d("HttpClient", "error: $error") }) {
+
+                    override fun getBody(): ByteArray? {
+                        return jsonBody.toString().toByteArray()
+                    }
+                }
+        queue.add(rasaRequest)
+    }
+
     fun sendMessage(ctx: Context, msg: String, chatHistory: LinearLayout, fileEncoded: String?) {
         val queue = Volley.newRequestQueue(ctx)
         val jsonBody = JSONObject()
@@ -94,6 +129,21 @@ class RequestUtils {
                         val jsonObject = jsonArray.getJSONObject(ii)
                         if (jsonObject.has("text")) {
                             chatHistory.addView(buildChatBubble(ctx, jsonObject["text"].toString(), "bot"))
+                        } else if (jsonObject.has("custom")) {
+                            val objectContainer: MutableMap<String, Any?> = UIFactory.elementCreator(ctx, jsonObject)
+                            chatHistory.addView(objectContainer["layout"] as View?)
+                            val arrayOfButtons: MutableList<MutableMap<String, Any>> = objectContainer["objects"] as MutableList<MutableMap<String, Any>>
+                            arrayOfButtons.forEach {
+                                item ->
+                                run {
+                                    val buttonOption: String = item["option"] as String
+                                    val payload: String = item["action"] as String
+                                    val button: Button = item["object"] as Button
+                                    button.setOnClickListener {
+                                        sendPayloadMessage(ctx, payload, chatHistory)
+                                    }
+                                }
+                            }
                         }
                     }
                 }},
