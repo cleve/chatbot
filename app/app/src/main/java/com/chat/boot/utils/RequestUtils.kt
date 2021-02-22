@@ -1,7 +1,9 @@
 package com.chat.boot.utils
 
+import android.content.res.Resources
 import android.content.Context
 import android.util.Log
+import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Response
@@ -11,6 +13,8 @@ import com.chat.boot.R
 import org.json.JSONArray
 import org.json.JSONObject
 
+val Int.dp: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 class RequestUtils {
     private val serverUrl: String = Constants.serverUrl
@@ -40,18 +44,19 @@ class RequestUtils {
         val textView = TextView(ctx)
         val customLayout = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
-        customLayout.setMargins(20,20,20,20)
-        textView.setPadding(20, 20, 20, 20)
+
+        if (interactionType == "bot") {
+            customLayout.setMargins(10.dp, 10.dp, 40.dp, 5.dp)
+            textView.setBackgroundResource(R.drawable.bot_responses)
+        } else {
+            customLayout.setMargins(40.dp, 5.dp, 10.dp, 5.dp)
+            customLayout.gravity = Gravity.RIGHT
+            textView.setBackgroundResource(R.drawable.user_responses)
+        }
+        textView.setPadding(10.dp, 10.dp, 10.dp, 10.dp)
         textView.layoutParams = customLayout
         textView.textSize = 14f
         textView.text = msg
-
-        if (interactionType == "bot") {
-            textView.setBackgroundResource(R.drawable.bot_responses)
-""        } else {
-            textView.setBackgroundResource(R.drawable.bot_responses)
-        }
-
         return textView
 
     }
@@ -69,6 +74,10 @@ class RequestUtils {
             jsonFileHolder.put("file", jsonFileObject)
             jsonBody.put("metadata", jsonFileHolder)
         }
+
+        // Adding user message to the stack
+        val userMessage: TextView = buildChatBubble(ctx, msg, "user")
+        chatHistory.addView(userMessage)
 
         val rasaRequest: StringRequest = object : StringRequest(
             Method.POST, serverUrl,
