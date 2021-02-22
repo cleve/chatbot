@@ -45,12 +45,13 @@ class RequestUtils {
         val customLayout = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
 
-        if (interactionType == "bot") {
-            customLayout.setMargins(10.dp, 10.dp, 40.dp, 5.dp)
-            textView.setBackgroundResource(R.drawable.bot_responses)
-        } else {
-            customLayout.setMargins(40.dp, 5.dp, 10.dp, 5.dp)
+        if (interactionType.equals("bot")) {
+            customLayout.setMargins(40.dp, 10.dp, 10.dp, 5.dp)
             customLayout.gravity = Gravity.RIGHT
+            textView.setBackgroundResource(R.drawable.bot_responses)
+        } else if (interactionType.equals("user")) {
+            customLayout.setMargins(10.dp, 5.dp, 40.dp, 5.dp)
+            customLayout.gravity = Gravity.LEFT
             textView.setBackgroundResource(R.drawable.user_responses)
         }
         textView.setPadding(10.dp, 10.dp, 10.dp, 10.dp)
@@ -86,13 +87,13 @@ class RequestUtils {
                 Log.d("HttpClient", "success! response: $response")
                 val jsonArray = JSONArray(response)
                 if (jsonArray.length() == 0) {
-                    chatHistory.addView(buildChatBubble(ctx, "server error", "boot"))
+                    chatHistory.addView(buildChatBubble(ctx, "server error", "bot"))
                 } else {
                     // Sadly JSONArray does not expose an iterator, doing it in the old way
                     for (ii in 0 until jsonArray.length()) {
                         val jsonObject = jsonArray.getJSONObject(ii)
                         if (jsonObject.has("text")) {
-                            chatHistory.addView(buildChatBubble(ctx, jsonObject["text"].toString(), "boot"))
+                            chatHistory.addView(buildChatBubble(ctx, jsonObject["text"].toString(), "bot"))
                         }
                     }
                 }},
