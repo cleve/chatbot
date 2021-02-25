@@ -2,10 +2,12 @@ package com.chat.boot.utils
 
 import android.content.res.Resources
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Response
@@ -42,25 +44,41 @@ class RequestUtils {
 
     }
 
-    fun buildChatBubble(ctx: Context, msg: String, interactionType: String?): TextView {
+    fun buildChatBubble(ctx: Context, msg: String, interactionType: String?): View {
+        val chatImage = ImageView(ctx)
         val textView = TextView(ctx)
+        val conversationContainer = LinearLayout(ctx)
         val customLayout = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
+        conversationContainer.orientation = LinearLayout.HORIZONTAL
+
+        val params = LinearLayout.LayoutParams(
+            40.dp,
+            40.dp
+        )
+        params.marginStart = 10.dp
+        params.marginEnd = 10.dp
+        chatImage.layoutParams = params
 
         if (interactionType.equals("bot")) {
-            customLayout.setMargins(40.dp, 10.dp, 10.dp, 5.dp)
-            customLayout.gravity = Gravity.RIGHT
-            textView.setBackgroundResource(R.drawable.bot_responses)
-        } else if (interactionType.equals("user")) {
-            customLayout.setMargins(10.dp, 5.dp, 40.dp, 5.dp)
+            chatImage.setImageResource(R.drawable.fpo___logo_icon)
+            conversationContainer.addView(chatImage)
+            customLayout.setMargins(10.dp, 10.dp, 10.dp, 5.dp)
             customLayout.gravity = Gravity.LEFT
+            textView.setBackgroundResource(R.drawable.bot_responses)
+            textView.setTextColor(Color.parseColor("#243443"))
+        } else if (interactionType.equals("user")) {
+            customLayout.setMargins(40.dp, 5.dp, 10.dp, 5.dp)
+            customLayout.gravity = Gravity.RIGHT
             textView.setBackgroundResource(R.drawable.user_responses)
+            textView.setTextColor(Color.parseColor("#FFFFFF"))
         }
         textView.setPadding(10.dp, 10.dp, 10.dp, 10.dp)
-        textView.layoutParams = customLayout
         textView.textSize = 14f
         textView.text = msg
-        return textView
+        conversationContainer.layoutParams = customLayout
+        conversationContainer.addView(textView)
+        return conversationContainer
 
     }
 
@@ -112,7 +130,7 @@ class RequestUtils {
         }
 
         // Adding user message to the stack
-        val userMessage: TextView = buildChatBubble(ctx, msg, "user")
+        val userMessage: View = buildChatBubble(ctx, msg, "user")
         chatHistory.addView(userMessage)
 
         val rasaRequest: StringRequest = object : StringRequest(
@@ -133,14 +151,31 @@ class RequestUtils {
                             val objectContainer: MutableMap<String, Any?> = UIFactory.elementCreator(ctx, jsonObject)
                             chatHistory.addView(objectContainer["layout"] as View?)
                             val arrayOfButtons: MutableList<MutableMap<String, Any>> = objectContainer["objects"] as MutableList<MutableMap<String, Any>>
-                            arrayOfButtons.forEach {
-                                item ->
-                                run {
-                                    val buttonOption: String = item["option"] as String
-                                    val payload: String = item["action"] as String
-                                    val button: Button = item["object"] as Button
-                                    button.setOnClickListener {
-                                        sendPayloadMessage(ctx, payload, chatHistory)
+                            val customObject: JSONObject = jsonObject["custom"] as JSONObject
+                            if (customObject.getString("layout").equals("image_selector")) {
+                                arrayOfButtons.forEach {
+                                        item ->
+                                    run {
+                                        val buttonOption: String = item["option"] as String
+                                        val payload: String = item["action"] as String
+                                        val imageView: ImageView = item["object"] as ImageView
+                                        imageView.setOnClickListener {
+                                            //sendPayloadMessage(ctx, payload, chatHistory)
+                                            Log.d("Sending message to the service => ", payload)
+                                        }
+                                        imageView.bringToFront()
+                                    }
+                                }
+                            } else {
+                                arrayOfButtons.forEach {
+                                        item ->
+                                    run {
+                                        val buttonOption: String = item["option"] as String
+                                        val payload: String = item["action"] as String
+                                        val button: Button = item["object"] as Button
+                                        button.setOnClickListener {
+                                            sendPayloadMessage(ctx, payload, chatHistory)
+                                        }
                                     }
                                 }
                             }

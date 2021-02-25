@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<actions>
+    <action intentName="actions.intent.START_EXERCISE">
+        <fulfillment urlTemplate="http://www.kuasard.com/open-voice-assistant">
+            <parameter-mapping
+                intentParameter="exercise.name"
+                urlParameter="exerciseType" />
+        </fulfillment>
+    </action>
+</actions>

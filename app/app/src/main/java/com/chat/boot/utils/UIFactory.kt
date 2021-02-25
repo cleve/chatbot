@@ -2,15 +2,62 @@ package com.chat.boot.utils
 
 import android.content.Context
 import android.view.Gravity
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import com.chat.boot.R
+import com.squareup.picasso.Picasso
 import org.json.JSONArray
 import org.json.JSONObject
 
 class UIFactory {
     companion object{
+
+        private fun imagesCreator(ctx: Context, title: String, options: JSONArray): MutableMap<String, Any?> {
+            val imageContainer: MutableMap<String, Any?> = mutableMapOf()
+            val images = mutableListOf<MutableMap<String, Any>>()
+
+            // Layouts
+            val scroll = HorizontalScrollView(ctx)
+            scroll.isClickable = true
+            val scrollParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+            scroll.layoutParams = scrollParams
+            val imagesContainer = LinearLayout(ctx)
+            val customLayout = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+            val paramsImages = LinearLayout.LayoutParams(
+                100.dp,
+                100.dp
+            )
+            scroll.isHorizontalScrollBarEnabled = false
+            paramsImages.setMargins(5.dp,10.dp,5.dp,10.dp)
+            imagesContainer.orientation = LinearLayout.HORIZONTAL
+            imagesContainer.layoutParams = customLayout
+            imagesContainer.isClickable = true
+
+            for (i in 0 until options.length()) {
+                val imageContent: MutableMap<String, Any> = mutableMapOf()
+                val imageViewContainer = ImageView(ctx)
+                imageViewContainer.layoutParams = paramsImages
+                imageViewContainer.isClickable = true
+                imageViewContainer.setBackgroundResource(R.drawable.image_selector)
+                imageViewContainer.setPadding(5.dp,5.dp,5.dp,5.dp)
+                val item: JSONObject = options.getJSONObject(i)
+                val url: String = item.getString("url")
+                Picasso.get().load(url).into(imageViewContainer);
+                imagesContainer.addView(imageViewContainer)
+
+                // References
+                imageContent["option"] = item.getString("id")
+                imageContent["action"] = item.getString("name")
+                imageContent["object"] = imageViewContainer
+                images.add(imageContent)
+            }
+            // Building the holder
+            scroll.addView(imagesContainer)
+            imageContainer["layout"] = scroll
+            imageContainer["objects"] = images
+            return imageContainer
+        }
 
         private fun  buttonCreator(ctx: Context, title: String, options: JSONArray): MutableMap<String, Any?>{
             val buttonContainer: MutableMap<String, Any?> = mutableMapOf()
@@ -36,12 +83,14 @@ class UIFactory {
             for (i in 0 until options.length()) {
                 val optionButton = Button(ctx)
                 val item: JSONObject = options.getJSONObject(i)
-                val option: JSONObject = item.get("value") as JSONObject
                 val buttonContent: MutableMap<String, Any> = mutableMapOf()
-                optionButton.text = option.getString("option")
+
+                // Set text
+                optionButton.text = item.getString("option")
+
                 // References
-                buttonContent["option"] = option.getString("option")
-                buttonContent["action"] = option.getString("payload")
+                buttonContent["option"] = item.getString("option")
+                buttonContent["action"] = item.getString("payload")
                 buttonContent["object"] = optionButton
                 buttons.add(buttonContent)
                 buttonsLinearLayout.addView(optionButton)
@@ -65,12 +114,20 @@ class UIFactory {
             if (!jsonElement.get("type").equals("ui")) {
                 return mutableMapOf()
             }
-            return if (jsonElement.get("layout").equals("buttons")) {
-                val title = jsonElement.get("title") as String
-                val jsonArray = jsonElement.get("data") as JSONArray
-                return buttonCreator(ctx, title, options = jsonArray)
-            } else {
-                return mutableMapOf()
+            return when {
+                jsonElement.get("layout").equals("buttons") -> {
+                    val title = jsonElement.get("title") as String
+                    val jsonArray = jsonElement.get("data") as JSONArray
+                    buttonCreator(ctx, title, options = jsonArray)
+                }
+                jsonElement.get("layout").equals("image_selector") -> {
+                    val title = jsonElement.get("title") as String
+                    val jsonArray = jsonElement.get("data") as JSONArray
+                    imagesCreator(ctx, title, options = jsonArray)
+                }
+                else -> {
+                    mutableMapOf()
+                }
             }
         }
     }

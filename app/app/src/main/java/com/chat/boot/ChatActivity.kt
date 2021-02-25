@@ -29,9 +29,15 @@ class ChatActivity : AppCompatActivity() {
         val btnSend = findViewById<Button>(R.id.button_send)
         val btnFile = findViewById<Button>(R.id.button_file)
         val btnCamera = findViewById<Button>(R.id.button_camera)
+        val btnVoiceActivity = findViewById<Button>(R.id.button_go_to_voice)
         val chatEntry = findViewById<EditText>(R.id.user_input)
-        val chatHistory = findViewById<TextView>(R.id.interactions)
         val chatInteractionContainer = findViewById<LinearLayout>(R.id.interactionContainer)
+
+        // Go to voice activity
+        btnVoiceActivity.setOnClickListener{
+            val voiceIntent = Intent(this, VoiceActivity::class.java)
+            startActivity(voiceIntent)
+        }
 
         // Camera selection
         btnCamera.setOnClickListener{
