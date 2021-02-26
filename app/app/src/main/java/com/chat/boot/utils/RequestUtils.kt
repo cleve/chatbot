@@ -56,14 +56,14 @@ class RequestUtils {
             40.dp,
             40.dp
         )
-        params.marginStart = 10.dp
-        params.marginEnd = 10.dp
+        params.marginStart = 0.dp
+        params.marginEnd = 5.dp
         chatImage.layoutParams = params
 
         if (interactionType.equals("bot")) {
-            chatImage.setImageResource(R.drawable.fpo___logo_icon)
+            chatImage.setImageResource(R.drawable.bot_icon)
             conversationContainer.addView(chatImage)
-            customLayout.setMargins(10.dp, 10.dp, 10.dp, 5.dp)
+            customLayout.setMargins(5.dp, 10.dp, 5.dp, 5.dp)
             customLayout.gravity = Gravity.LEFT
             textView.setBackgroundResource(R.drawable.bot_responses)
             textView.setTextColor(Color.parseColor("#243443"))

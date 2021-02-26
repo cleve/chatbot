@@ -68,6 +68,7 @@ class VoiceActivity : AppCompatActivity(), RecognitionListener {
                     arrayOf(Manifest.permission.RECORD_AUDIO),
                     permission
                 )
+
             } else {
                 progressBar.isIndeterminate = false
                 progressBar.visibility = View.VISIBLE
@@ -79,10 +80,6 @@ class VoiceActivity : AppCompatActivity(), RecognitionListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>,
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        Log.d("====> ", requestCode.toString())
-        Log.d("====> ", permissions.toString())
-        Log.d("======>", grantResults[0].toString())
 
         when (requestCode) {
             permission ->

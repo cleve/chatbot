@@ -16,6 +16,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/fpo___logo_on_blue"
+        app:srcCompat="@drawable/robot_launcher"
          />
 </androidx.constraintlayout.widget.ConstraintLayout>
