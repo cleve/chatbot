@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.chat.boot.utils.Base64Converter
 import com.chat.boot.utils.RequestUtils
@@ -29,15 +31,11 @@ class ChatActivity : AppCompatActivity() {
         val btnSend = findViewById<Button>(R.id.button_send)
         val btnFile = findViewById<Button>(R.id.button_file)
         val btnCamera = findViewById<Button>(R.id.button_camera)
-        val btnVoiceActivity = findViewById<Button>(R.id.button_go_to_voice)
+
         val chatEntry = findViewById<EditText>(R.id.user_input)
         val chatInteractionContainer = findViewById<LinearLayout>(R.id.interactionContainer)
 
-        // Go to voice activity
-        btnVoiceActivity.setOnClickListener{
-            val voiceIntent = Intent(this, VoiceActivity::class.java)
-            startActivity(voiceIntent)
-        }
+
 
         // Camera selection
         btnCamera.setOnClickListener{
