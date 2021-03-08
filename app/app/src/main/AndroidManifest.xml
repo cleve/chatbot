@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <queries>
         <intent>
@@ -23,12 +23,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Boot"
         android:usesCleartextTraffic="true">
-        <meta-data android:name="com.google.android.actions" android:resource="@xml/actions" />
+        <activity
+            android:name=".MainChatActivity"
+            android:label="@string/title_activity_main_chat"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@xml/actions" />
+
         <activity
             android:name=".VoiceActivity"
             android:label="@string/title_activity_voice"
             android:theme="@style/Theme.Boot.NoActionBar">
             <tools:validation testUrl="http://www.kuasard.com/open-voice-assistant" />
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -36,9 +45,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
                     android:host="www.kuasard.com"
-                    android:pathPattern="/open-voice-assistant" />
+                    android:pathPattern="/open-voice-assistant"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
         <activity
@@ -52,7 +61,7 @@
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
         <activity
             android:name=".ChatActivity"
             android:label="@string/title_activity_chat"

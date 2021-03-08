@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.chat.boot.ChatActivity
+import com.chat.boot.MainChatActivity
 import com.chat.boot.R
 
 class LoginActivity : AppCompatActivity() {
@@ -107,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
         ).show()
 
-        val intent = Intent(this, ChatActivity::class.java).apply {
+        val intent = Intent(this, MainChatActivity::class.java).apply {
             putExtra("name", "Mauricio")
         }
         startActivity(intent)
