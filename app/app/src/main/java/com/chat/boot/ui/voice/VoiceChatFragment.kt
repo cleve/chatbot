@@ -1,29 +1,28 @@
-package com.chat.boot
-
+package com.chat.boot.ui.voice
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.chat.boot.R
 import java.util.*
 
+class VoiceChatFragment : Fragment(), RecognitionListener {
 
-class VoiceActivity : AppCompatActivity(), RecognitionListener {
-
+    private lateinit var notificationsViewModel: VoiceChatViewModel
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var speechRecognizerIntent: Intent
     private val permission = 100
@@ -31,32 +30,28 @@ class VoiceActivity : AppCompatActivity(), RecognitionListener {
     private lateinit var returnedText: TextView
     private  lateinit var toggleButton: ToggleButton
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_voice)
-        setSupportActionBar(findViewById(R.id.toolbar))
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        notificationsViewModel =
+                ViewModelProvider(this).get(VoiceChatViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_voice_chat, container, false)
 
-        // Deep link
-        val action: String? = intent?.action
-        val data: Uri? = intent?.data
-
-        findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = title
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
-            finish()
-        }
-
-        toggleButton = findViewById(R.id.toggleVoiceButton)
-        progressBar = findViewById(R.id.progressBar)
-        returnedText = findViewById(R.id.speech_to_text)
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        // Configuring voice chat elements
+        toggleButton = root.findViewById(R.id.toggleVoiceButton)
+        progressBar = root.findViewById(R.id.progressBar)
+        returnedText = root.findViewById(R.id.speech_to_text)
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this.context);
         speechRecognizer.setRecognitionListener(this)
 
         progressBar.visibility = View.VISIBLE
 
         speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
 
@@ -65,9 +60,8 @@ class VoiceActivity : AppCompatActivity(), RecognitionListener {
             if (isChecked) {
                 progressBar.visibility = View.VISIBLE
                 progressBar.isIndeterminate = true
-                ActivityCompat.requestPermissions(this@VoiceActivity,
-                    arrayOf(Manifest.permission.RECORD_AUDIO),
-                    permission
+                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
+                        permission
                 )
 
             } else {
@@ -76,6 +70,8 @@ class VoiceActivity : AppCompatActivity(), RecognitionListener {
                 speechRecognizer.stopListening()
             }
         }
+
+        return root
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>,
@@ -85,13 +81,13 @@ class VoiceActivity : AppCompatActivity(), RecognitionListener {
         when (requestCode) {
             permission ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager
-                    .PERMISSION_GRANTED) {
-                        Log.d("inside", permission.toString())
-                        speechRecognizer.startListening(speechRecognizerIntent)
+                                .PERMISSION_GRANTED) {
+                    Log.d("inside", permission.toString())
+                    speechRecognizer.startListening(speechRecognizerIntent)
                 } else {
-                        Log.d("onRequestPermissionsResult", permission.toString())
-                    Toast.makeText(this@VoiceActivity, "Permission Denied!",
-                        Toast.LENGTH_SHORT).show()
+                    Log.d("onRequestPermissionsResult", permission.toString())
+                    Toast.makeText(this.context, "Permission Denied!",
+                            Toast.LENGTH_SHORT).show()
                 }
         }
     }

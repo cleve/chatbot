@@ -12,8 +12,8 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.chat.boot.ui.notifications.NotificationsFragment"
+        android:id="@+id/navigation_voice_chat"
+        android:name="com.chat.boot.ui.voice.VoiceChatFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_voice_chat" />
 </navigation>
