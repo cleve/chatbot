@@ -68,6 +68,8 @@ class VoiceChatFragment : Fragment(), RecognitionListener {
                 progressBar.isIndeterminate = false
                 progressBar.visibility = View.VISIBLE
                 speechRecognizer.stopListening()
+
+                // TODO: Capture text and send it to server.
             }
         }
 
