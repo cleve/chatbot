@@ -15,7 +15,7 @@ class Message(sender: String){
     private lateinit var messageReceived: String
     private var messagesReceived = arrayListOf<String>()
 
-    fun processMessage(ctx: Context, msg: String, fileEncoded: String?) {
+    private fun processMessage(ctx: Context, msg: String, fileEncoded: String?) {
         val queue = Volley.newRequestQueue(ctx)
         val jsonBody = JSONObject()
         jsonBody.put("sender", this.sender)
@@ -44,6 +44,7 @@ class Message(sender: String){
                             if (jsonObject.has("text")) {
                                 messageReceived = jsonObject["text"].toString()
                                 messagesReceived.add(messageReceived)
+                                Log.i("msg", messageReceived)
                             }
                         }
                     }},

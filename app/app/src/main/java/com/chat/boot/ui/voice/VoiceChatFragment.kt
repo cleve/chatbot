@@ -18,10 +18,12 @@ import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.chat.boot.R
+import com.chat.boot.utils.Message
 import java.util.*
 
 class VoiceChatFragment : Fragment(), RecognitionListener {
 
+    private val messageProcessor: Message = Message("Android-app")
     private lateinit var notificationsViewModel: VoiceChatViewModel
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var speechRecognizerIntent: Intent
@@ -68,8 +70,6 @@ class VoiceChatFragment : Fragment(), RecognitionListener {
                 progressBar.isIndeterminate = false
                 progressBar.visibility = View.VISIBLE
                 speechRecognizer.stopListening()
-
-                // TODO: Capture text and send it to server.
             }
         }
 
@@ -157,5 +157,6 @@ class VoiceChatFragment : Fragment(), RecognitionListener {
         }
         Log.d("text", text)
         returnedText.text = text
+        this.context?.let { messageProcessor.sendMessage(it, text) }
     }
 }
