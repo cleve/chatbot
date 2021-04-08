@@ -29,4 +29,5 @@
     <string name="title_activity_main_chat">MainActivity</string>
     <string name="title_home">Chat</string>
     <string name="title_notifications">Voice</string>
+    <string name="title_activity_register">RegisterActivity</string>
 </resources>

@@ -24,9 +24,13 @@
         android:theme="@style/Theme.Boot"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".RegisterActivity"
+            android:label="@string/title_activity_register"
+            android:theme="@style/Theme.Boot.NoActionBar"></activity>
+        <activity
             android:name=".MainChatActivity"
             android:label="@string/title_activity_main_chat"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <meta-data
             android:name="com.google.android.actions"
